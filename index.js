@@ -70,7 +70,7 @@ server.post("/traveller/login", auth.loginFormValidation, async (req, res) => {
 
   return res.status(200).send({
    message: "Login successfull!",
-   data: { name: result.username, email: result.password },
+   data: { name: result.username, email: result.email },
    token: await auth.generateToken(email, password, process.env.access_token_key, process.env.refresh_token_key)
   });
  } catch (error) {
@@ -97,6 +97,9 @@ server.post("/traveller/pins", auth.verifyToken, async (req, res) => {
  }
 });
 
+server.post("/traveller/logout", auth.clearToken, (req, res) => {
+ res.status(200).send("Logout successfully !");
+})
 
 
 //  *************** ->  port listener  <- ****************

@@ -1,6 +1,10 @@
 // importing packages
 const jwt = require("jsonwebtoken");
 
+// store all access tokens 
+var access_token_collection = [];
+
+
 // form validation [helper function]
 const signupFormValidation = (req, res, next) => {
  // check 3 fields
@@ -54,7 +58,30 @@ const loginFormValidation = (req, res, next) => {
 const generateToken = async (email, password, access_token_key, refresh_token_key) => {
  const access_token = await jwt.sign({ email: email, password: password }, access_token_key, {expiresIn:"7d"});
  const refresh_token = await jwt.sign({ email: email, password: password }, refresh_token_key);
+ 
+ // push the newly created access token to the collection array
+ access_token_collection.push(access_token);
+ 
+ console.log(access_token_collection)
+ 
  return { access_token, refresh_token }
+}
+
+
+// clear an accesstoken on user logout
+const clearToken = (req, res, next) => {
+ const { access_token } = req.body;
+ console.log(access_token);
+ 
+ // removing given token from arrays
+try {
+ access_token_collection = access_token_collection.filter(token => {
+  token !== access_token;
+ });
+ next()
+} catch (error) {
+ res.status(404).send("Token doesn't exists !!");
+} 
 }
 
 // verify token [helper function]
@@ -103,4 +130,4 @@ const pindataValidation = (data) => {
 }
  
 
-module.exports = { signupFormValidation, loginFormValidation, generateToken, verifyToken, pindataValidation }
+module.exports = { signupFormValidation, loginFormValidation, generateToken, verifyToken, clearToken, pindataValidation }
