@@ -17,7 +17,7 @@ const server = express();
 const PORT = process.env.PORT || 8000;
 
 
-// middlewares
+// *************** ->  middlewares  <- ****************
 server.use(cors());
 server.use(express.json())
 
