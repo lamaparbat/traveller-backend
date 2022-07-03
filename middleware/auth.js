@@ -48,7 +48,7 @@ const loginFormValidation = (req, res, next) => {
  // email formatting
  if (!email.includes("@gmail.com"))
   return res.status(404).send("Email format is unknown. Please kindly enter correct email format like abc@gmail.com");
-
+ 
  // if everything above condition pass, then proceed to next
  next();
 }
@@ -61,8 +61,6 @@ const generateToken = async (email, password, access_token_key, refresh_token_ke
  
  // push the newly created access token to the collection array
  access_token_collection.push(access_token);
- 
- console.log(access_token_collection)
  
  return { access_token, refresh_token }
 }
@@ -97,6 +95,10 @@ const verifyToken = async (req, res, next) => {
  
  //remove the bearer text from token
  access_token = access_token.substr(7, access_token.length);
+ 
+ // check if token is available in collection or not
+ if (!access_token_collection.includes(access_token))
+  return res.status(404).send("Token not found in server !!")
 
  try {
   const result = await jwt.verify(access_token, process.env.access_token_key);

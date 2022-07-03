@@ -3,6 +3,7 @@ require("dotenv").config()
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
 
 // *************** ->  importing user-defined modules   <- ****************
@@ -20,6 +21,7 @@ const PORT = process.env.PORT || 8000;
 // *************** ->  middlewares  <- ****************
 server.use(cors());
 server.use(express.json())
+server.use(cookieParser())
 
 
 // *************** ->   routes  <- ****************
@@ -96,6 +98,24 @@ server.post("/traveller/pins", auth.verifyToken, async (req, res) => {
   res.status(200).send("INTERNAL SERVER ERROR !!");
  }
 });
+
+server.get("/traveller/getPinnedData", auth.verifyToken, async (req, res) => {
+ try {
+  // fetch the pinned data
+  const pinnedData = await pinModel.find();
+  
+  //validate the pinned response result
+  if (pinnedData === null || undefined)
+    return res.status(200).send("0 Pinned found !!");
+
+  res.status(200).send(pinnedData)
+   
+ } catch (error) {
+   res.status(500).send("INTERNAL SERVER ERORR !")
+ }
+ 
+ 
+})
 
 server.post("/traveller/logout", auth.clearToken, (req, res) => {
  res.status(200).send("Logout successfully !");
